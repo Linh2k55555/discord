@@ -27,11 +27,12 @@ function writeData(data) {
 }
 
 client.once('ready', async () => {
-    console.log(`Bot đã hoạt động: ${client.user.tag}`);
+    console.log(`✅ Bot đã hoạt động: ${client.user.tag}`);
 
     let data = readData();
 
     client.guilds.cache.forEach(async (guild) => {
+        console.log(`📡 Đang tải thông tin thành viên từ server: ${guild.name}`);
         const members = await guild.members.fetch();
         members.forEach((member) => {
             if (!member.user.bot) {
@@ -48,6 +49,7 @@ client.once('ready', async () => {
 
 // 🎉 Sự kiện chào mừng thành viên mới
 client.on('guildMemberAdd', async (member) => {
+    console.log(`➕ Thành viên mới: ${member.user.username} (${member.id}) đã tham gia.`);
     let data = readData();
     data[member.id] = {
         id: member.id,
@@ -79,6 +81,7 @@ client.on('guildMemberAdd', async (member) => {
 
 // 😢 Sự kiện khi thành viên rời server
 client.on('guildMemberRemove', async (member) => {
+    console.log(`➖ Thành viên rời đi: ${member.user.username} (${member.id})`);
     let data = readData();
     const username = data[member.id] ? data[member.id].username : "Thành viên ẩn danh";
     delete data[member.id];
@@ -94,6 +97,7 @@ client.on('guildMemberRemove', async (member) => {
 // 🔧 Lệnh quản trị viên
 client.on('messageCreate', async (message) => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
+    console.log(`📩 Nhận lệnh: ${message.content} từ ${message.author.username}`);
     const args = message.content.slice(prefix.length).trim().split(/\s+/);
     const command = args.shift().toLowerCase();
 
@@ -106,6 +110,7 @@ client.on('messageCreate', async (message) => {
         data[`welcomeChannel_${message.guild.id}`] = message.channel.id;
         writeData(data);
         message.reply(`✅ Đã thiết lập kênh **chào mừng**: ${message.channel}`);
+        console.log(`📌 Đã lưu kênh chào mừng: ${message.channel.id}`);
     }
 
     if (command === 'setleavechannel') {
@@ -113,10 +118,12 @@ client.on('messageCreate', async (message) => {
         data[`leaveChannel_${message.guild.id}`] = message.channel.id;
         writeData(data);
         message.reply(`✅ Đã thiết lập kênh **thông báo rời**: ${message.channel}`);
+        console.log(`📌 Đã lưu kênh thông báo rời: ${message.channel.id}`);
     }
 
     if (command === 'restart') {
         message.reply('🔄 Bot đang khởi động lại...');
+        console.log("⚙️ Bot đang khởi động lại theo yêu cầu...");
         setTimeout(() => process.exit(0), 3000);
     }
 });
