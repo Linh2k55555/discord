@@ -38,7 +38,7 @@ client.once('ready', async () => {
             if (!member.user.bot) {
                 data[member.id] = {
                     id: member.id,
-                    username: member.user.username
+                    username: member.user.globalName ? member.user.globalName : member.user.username
                 };
             }
         });
@@ -53,7 +53,7 @@ client.on('guildMemberAdd', async (member) => {
     let data = readData();
     data[member.id] = {
         id: member.id,
-        username: member.user.username
+        username: member.user.globalName ? member.user.globalName : member.user.username
     };
     writeData(data);
 
@@ -61,9 +61,10 @@ client.on('guildMemberAdd', async (member) => {
     let welcomeChannelId = guildData[`welcomeChannel_${member.guild.id}`] || member.guild.systemChannelId;
     const welcomeImage = "https://imgur.com/mw5FvvB.gif";
     const memberCount = member.guild.memberCount;
+    const username = member.user.globalName ? member.user.globalName : member.user.username;
 
     const welcomeMessage = 
-        `Chào mừng bạn <@${member.id}> đến với đại gia đình của ✨Te Con✨\n\n` +
+        `Chào mừng bạn **${username}** đến với đại gia đình của ✨Te Con✨\n\n` +
         `🔰 Bạn là **thành viên thứ ${memberCount}** của server. Bạn nhớ đọc kĩ luật của server ✨Te Con✨ và tôn trọng mọi người nhé.\n\n` +
         `🔰 Mong bạn sẽ luôn có thời gian vui vẻ tại ✨Te Con✨`;
 
